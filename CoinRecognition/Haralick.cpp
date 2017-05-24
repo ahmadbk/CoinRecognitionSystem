@@ -13,7 +13,7 @@ Haralick::Haralick(int VS)
 
 void Haralick::start(const char * path,bool console)
 {
-	cout << endl << endl;
+	cout << endl;
 	std::cout << "Extracting Haralick Features..." << endl;
 
 	std::cout << "Extracting Haralick Features for Training Data...";
@@ -59,9 +59,9 @@ void Haralick::ExtractData(Coin *p, boolean t, const char *path, boolean console
 	else
 	{
 		if (t)
-			file.open("C:/Users/ahmadbk/Desktop/CRS/CoinRecognition/CoinRecognition/train.txt");
+			file.open("train.txt");
 		else
-			file.open("C:/Users/ahmadbk/Desktop/CRS/CoinRecognition/CoinRecognition/test.txt");
+			file.open("test.txt");
 	}
 
 	if (!file.is_open())
@@ -192,9 +192,9 @@ void Haralick::extractFeatures(string *imagesArray, boolean t, const char * path
 	else
 	{
 		if (t)
-			imageFilePath = "C:/Users/ahmadbk/Desktop/CRS/CoinRecognition/CoinRecognition/train/*";	//path to all the train images
+			imageFilePath = "train/*";	//path to all the train images
 		else
-			imageFilePath = "C:/Users/ahmadbk/Desktop/CRS/CoinRecognition/CoinRecognition/test/*";	//path to all the test images
+			imageFilePath = "test/*";	//path to all the test images
 	}
 
 	string temp(imageFilePath);
@@ -229,11 +229,17 @@ void Haralick::extractFeatures(string *imagesArray, boolean t, const char * path
 	cv::Mat imgOriginal;		// input image
 	cv::Mat imgGrayscale;		// grayscale of input image
 	cv::Mat finalImage;			//16-tone grayscae image
+	cv::Mat hist_output;
+	cv::Mat imgBlur;
+	cv::Mat medBlur;
+	cv::Mat gaussBlur;			// Gaussian Blur
+	cv::Mat canny_output;
+	cv::Mat sharp;
 
-								//result << "ImageName;Distance#Orientation#MaxProbabilty#Energy#Homogeneity#Contrast#Correlation#Entropy;Distance#Orientation...\n";
+	//result << "ImageName;Distance#Orientation#MaxProbabilty#Energy#Homogeneity#Contrast#Correlation#Entropy;Distance#Orientation...\n";
 
-								//Run the program for all the images found in the folder
-								//------------------------------------------------------------------------------
+	//Run the program for all the images found in the folder
+	//------------------------------------------------------------------------------
 	for (int w = 0; w < size; w++)
 	{
 		string imgName = imagesArray[w];
@@ -258,9 +264,9 @@ void Haralick::extractFeatures(string *imagesArray, boolean t, const char * path
 		else
 		{
 			if (t)
-				imagePath = "C:/Users/ahmadbk/Desktop/CRS/CoinRecognition/CoinRecognition/train/";
+				imagePath = "train/";
 			else
-				imagePath = "C:/Users/ahmadbk/Desktop/CRS/CoinRecognition/CoinRecognition/test/";
+				imagePath = "test/";
 		}
 
 		string path = imagePath + imgName;
@@ -271,15 +277,20 @@ void Haralick::extractFeatures(string *imagesArray, boolean t, const char * path
 		}															//return(0);												// and exit program
 
 		cv::cvtColor(imgOriginal, imgGrayscale, CV_BGR2GRAY);		// convert to grayscale
+		equalizeHist(imgGrayscale, hist_output);
+		blur(hist_output, imgBlur, Size(10, 10));
+		medianBlur(imgBlur, medBlur, 3);
+		GaussianBlur(medBlur, gaussBlur, Size(5, 5), 1.5);
+		sharp = 5 * (imgGrayscale - gaussBlur) + imgGrayscale;
 
-																	//Convert the grayscale image to 16-tone grayscal using lookup table
-																	//------------------------------------------------------------------------------
+		//Convert the grayscale image to 16-tone grayscal using lookup table
+		//------------------------------------------------------------------------------
 		uchar *p;
 		cv::Mat lookuptable(1, 256, CV_8U);
 		p = lookuptable.data;
 		for (int i = 0; i < 256; ++i)
 			p[i] = (i / 16);
-		LUT(imgGrayscale, lookuptable, finalImage);
+		LUT(sharp, lookuptable, finalImage);
 
 		for (int i = 0; i < finalImage.rows; i++)
 		{

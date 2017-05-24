@@ -15,7 +15,7 @@
 #include "Haralick.h"
 #include "myMoments.h"
 
-#define TRAINING_SIZE 15
+#define TRAINING_SIZE 11
 #define TEST_SIZE 10
 #define VEC_SIZE 7
 #define HARALICK 48

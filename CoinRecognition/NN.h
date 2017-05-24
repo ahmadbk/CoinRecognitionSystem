@@ -11,7 +11,7 @@
 #include<ctime>
 #include "opencv2/ml.hpp"
 #include "Coin.h"
-#define TRAINING_SIZE 15
+#define TRAINING_SIZE 11
 #define TEST_SIZE 10
 
 using namespace std;

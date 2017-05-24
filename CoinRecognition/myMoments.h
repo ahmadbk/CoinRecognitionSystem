@@ -10,7 +10,7 @@
 #include<ctime>
 #include "opencv2/ml.hpp"
 #include "Coin.h"
-#define TRAINING_SIZE 15
+#define TRAINING_SIZE 11
 #define TEST_SIZE 10
 #define IMAGE_SIZE_HEIGHT_MAX 500
 #define IMAGE_SIZE_WIDTH_MAX 500

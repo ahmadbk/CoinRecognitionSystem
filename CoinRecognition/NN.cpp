@@ -44,14 +44,14 @@ bool NN::train_mlp_classifier(const string& filename_to_save)
 	}
 
 	// 2. train classifier
-	//int layer_sz[] = { train_data.cols,5,class_count };
-	int layer_sz[] = { train_data.cols,class_count };
+	int layer_sz[] = { train_data.cols,20,class_count };
+	//int layer_sz[] = { train_data.cols,class_count };
 	int nlayers = (int)(sizeof(layer_sz) / sizeof(layer_sz[0]));
 	Mat layer_sizes(1, nlayers, CV_32S, layer_sz);
 
 #if 1
 	int method = ANN_MLP::BACKPROP;
-	double method_param = 0.000001;
+	double method_param = 0.00000001;
 	int max_iter = 10000;
 #else
 	int method = ANN_MLP::RPROP;

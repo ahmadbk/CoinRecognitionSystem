@@ -13,7 +13,7 @@ myMoments::myMoments(int VS)
 
 void myMoments::start(const char * path, bool console)
 {
-	cout << endl << endl;
+	cout << endl;
 	std::cout << "Extracting Hu Moments for Training Data..." << endl;
 	extractHuMoments(TrainingImagesArray, 1, path, console);		//Extract Training Features
 	extractHuMoments(TestingImagesArray, 0, path, console);
@@ -110,16 +110,24 @@ void myMoments::extractHuMoments(string *imagesArray, boolean t, const char * pa
 
 		cv::Mat imgOriginal;										// input image
 		cv::Mat imgGrayscale;										// grayscale of input image
-	cv:Mat imgGrayScaleNew;
+		cv:Mat imgGrayScaleNew;
+		cv::Mat imgBlur;
+		cv::Mat medBlur;
 		cv::Mat gaussBlur;											// Gaussian Blur
 		cv::Mat canny_output;
+		cv::Mat detail;
+		cv::Mat sharp;
+		cv::Mat hist_output;
+
 
 		imgOriginal = cv::imread(path);								// open image
 		if (imgOriginal.empty()) {									// if unable to open image
 			std::cout << "error: image not read from file\n\n";		// show error message on command line
 		}
 		cv::cvtColor(imgOriginal, imgGrayscale, CV_BGR2GRAY);		// convert to grayscale
-
+		equalizeHist(imgGrayscale, hist_output);
+		blur(hist_output, imgBlur, Size(10, 10));
+		medianBlur(imgBlur, medBlur, 3);
 																	//uchar *p1;
 																	//cv::Mat lookuptable(1, 256, CV_8U);
 																	//p1 = lookuptable.data;
@@ -127,11 +135,29 @@ void myMoments::extractHuMoments(string *imagesArray, boolean t, const char * pa
 																	//	p1[i] = (i / 16);
 																	//LUT(imgGrayscale, lookuptable, imgGrayScaleNew);
 
-		GaussianBlur(imgGrayscale, gaussBlur, Size(5, 5), 1.5);
-		Canny(gaussBlur, canny_output, 50, 150, 3);
+		GaussianBlur(medBlur, gaussBlur, Size(5, 5), 1.5);
+		detail = (imgGrayscale - gaussBlur);
+		sharp = 5 * (imgGrayscale - gaussBlur) + imgGrayscale;
+		Canny(sharp, canny_output, 50, 150, 3);
 
-		//namedWindow("Canny", WINDOW_AUTOSIZE);
-		//imshow("Canny", canny_output);
+		//namedWindow("imgOriginal", WINDOW_AUTOSIZE);
+		//imshow("imgOriginal", imgOriginal);
+		//namedWindow("imgGrayscale", WINDOW_AUTOSIZE);
+		//imshow("imgGrayscale", imgGrayscale);
+		//namedWindow("hist_output", WINDOW_AUTOSIZE);
+		//imshow("hist_output", hist_output);
+		//namedWindow("imgBlur", WINDOW_AUTOSIZE);
+		//imshow("imgBlur", imgBlur);
+		//namedWindow("medBlur", WINDOW_AUTOSIZE);
+		//imshow("medBlur", medBlur);
+		//namedWindow("detail", WINDOW_AUTOSIZE);
+		//imshow("detail", detail);
+		//namedWindow("sharp", WINDOW_AUTOSIZE);
+		//imshow("sharp", sharp);
+		//namedWindow("canny_output", WINDOW_AUTOSIZE);
+		//imshow("canny_output", canny_output);
+		//cv::waitKey();
+
 
 		Moments mp;
 		mp = moments(canny_output, true);

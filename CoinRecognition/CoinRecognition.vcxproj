@@ -119,6 +119,7 @@
     <ClInclude Include="Coin.h" />
     <ClInclude Include="Features.h" />
     <ClInclude Include="Haralick.h" />
+    <ClInclude Include="myKNN.h" />
     <ClInclude Include="myMoments.h" />
     <ClInclude Include="mySVM.h" />
     <ClInclude Include="NN.h" />
@@ -127,6 +128,7 @@
   <ItemGroup>
     <ClCompile Include="Haralick.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="myKNN.cpp" />
     <ClCompile Include="myMoments.cpp" />
     <ClCompile Include="mySVM.cpp" />
     <ClCompile Include="NN.cpp" />
