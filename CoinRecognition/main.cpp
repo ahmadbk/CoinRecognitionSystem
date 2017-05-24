@@ -14,6 +14,7 @@
 #include "mySVM.h"
 #include "Haralick.h"
 #include "myMoments.h"
+#include "myKNN.h"
 
 #define TRAINING_SIZE 11
 #define TEST_SIZE 10
@@ -53,6 +54,8 @@ int main(int argc, char * argv[]) {
 	ann.train_mlp_classifier("classifier.txt");
 	mySVM sv(HARALICK, trainingData, labels, pData, pLabels);
 	sv.train_mlp_classifier("classifier.txt");
+	myKNN mk(HARALICK, trainingData, labels, pData, pLabels);
+	mk.train_mlp_classifier("classifier.txt");
 
 	//cv::waitKey();
 	system("pause");
