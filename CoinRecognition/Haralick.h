@@ -40,11 +40,22 @@ public:
 
 	Haralick(int VS);
 
+	//Runs the sequence of methods in order to successfully generate the test and train matrices
 	void start(const char * path, bool console);
+
+	//Extract Data from the text file and put into objects 
 	void ExtractData(Coin *p, boolean t, const char *path, boolean console);
+
+	//Extract the number of images in test/train folder and use the methods below to calc features and store in text file
 	void extractFeatures(string *imagesArray, boolean t, const char * path, boolean console);
+
+	//Set up the train and test matrices 
 	void setUpMatrices(Coin *p, boolean t, int *tempLabels, float tempTrainingData[][100]);
+
+	//Used to return the training and test matrices to the main
 	void getMatrices(float tD[15][100], int l[15], float pD[10][100], int pl[15]);
+
+	//Methods to obtain the actual Haralick Features:
 	void calculateGLCM(int angle, int distance, int cols, int rows);
 	float maxProb();
 	float energy();

@@ -17,25 +17,25 @@ void Haralick::start(const char * path,bool console)
 	std::cout << "Extracting Haralick Features..." << endl;
 
 	std::cout << "Extracting Haralick Features for Training Data...";
-	extractFeatures(TrainingImagesArray, 1, path, console);		//Extract Training Features
+	extractFeatures(TrainingImagesArray, 1, path, console);		//Extract Training(1) Features
 	cout << "DONE" << endl;
 
 	std::cout << "Extracting Haralick Features for Test Data...";
-	extractFeatures(TestingImagesArray, 0, path, console);		//Extract Testing Features
+	extractFeatures(TestingImagesArray, 0, path, console);		//Extract Testing(0) Features
 	cout << "DONE" << endl;
 
 	std::cout << "Extract Training Haralick Features from textfile...";
-	ExtractData(training, 1, path, console);					//Extract Data from train textfile
+	ExtractData(training, 1, path, console);					//Extract Data from train(1) textfile
 	cout << "DONE" << endl;
 	std::cout << "Store Training Data in Matrices...";
-	setUpMatrices(training, 1, labels, trainingData);			//Split data into appropriate training matrices
+	setUpMatrices(training, 1, labels, trainingData);			//Split data into appropriate training(1) matrices
 	cout << "DONE" << endl;
 
 	std::cout << "Extract Test Features from textfile...";
-	ExtractData(test, 0, path, console);						//Extract Data from test textfile
+	ExtractData(test, 0, path, console);						//Extract Data from test(0) textfile
 	cout << "DONE" << endl;
 	std::cout << "Store Test Data in Matrices...";
-	setUpMatrices(test, 0, pLabels, pData);						//Split data into appropriate test matrices
+	setUpMatrices(test, 0, pLabels, pData);						//Split data into appropriate test(0) matrices
 	cout << "Training and Test Matrices Created!" << endl << endl;
 }
 
@@ -44,7 +44,7 @@ void Haralick::ExtractData(Coin *p, boolean t, const char *path, boolean console
 	std::ifstream file;
 	string line;
 
-	if (console)
+	if (console)//check if we working from console or Local Windows Debugger
 	{
 		string temp1;
 		if (t)
@@ -52,13 +52,13 @@ void Haralick::ExtractData(Coin *p, boolean t, const char *path, boolean console
 		else
 			temp1 = "test.txt";
 
-		string temp2(path);
+		string temp2(path); //Use the path provided by the user
 		string temp3 = temp2 + temp1;
 		file.open(temp3);
 	}
 	else
 	{
-		if (t)
+		if (t)//Determine if we working with test or train data
 			file.open("train.txt");
 		else
 			file.open("test.txt");
@@ -73,7 +73,7 @@ void Haralick::ExtractData(Coin *p, boolean t, const char *path, boolean console
 		int i = 0;
 		int k = 0;
 
-		while (getline(file, line))
+		while (getline(file, line))//get first line from textfile
 		{
 			char * line1 = &line[0];
 			char *next_token1 = NULL;
@@ -226,15 +226,15 @@ void Haralick::extractFeatures(string *imagesArray, boolean t, const char * path
 	else
 		result.open("test.txt");
 
-	cv::Mat imgOriginal;		// input image
-	cv::Mat imgGrayscale;		// grayscale of input image
-	cv::Mat finalImage;			//16-tone grayscae image
-	cv::Mat hist_output;
-	cv::Mat imgBlur;
-	cv::Mat medBlur;
+	cv::Mat imgOriginal;		//input image
+	cv::Mat imgGrayscale;		//grayscale of input image
+	cv::Mat finalImage;			//16-tone grayscale image
+	cv::Mat hist_output;		//histogram equalization
+	cv::Mat imgBlur;			//mean blur
+	cv::Mat medBlur;			//median blur
 	cv::Mat gaussBlur;			// Gaussian Blur
-	cv::Mat canny_output;
-	cv::Mat sharp;
+	cv::Mat canny_output;		//canny image
+	cv::Mat sharp;				//sharpened image
 
 	//result << "ImageName;Distance#Orientation#MaxProbabilty#Energy#Homogeneity#Contrast#Correlation#Entropy;Distance#Orientation...\n";
 
@@ -277,11 +277,11 @@ void Haralick::extractFeatures(string *imagesArray, boolean t, const char * path
 		}															//return(0);												// and exit program
 
 		cv::cvtColor(imgOriginal, imgGrayscale, CV_BGR2GRAY);		// convert to grayscale
-		equalizeHist(imgGrayscale, hist_output);
-		blur(hist_output, imgBlur, Size(10, 10));
-		medianBlur(imgBlur, medBlur, 3);
-		GaussianBlur(medBlur, gaussBlur, Size(5, 5), 1.5);
-		sharp = 5 * (imgGrayscale - gaussBlur) + imgGrayscale;
+		equalizeHist(imgGrayscale, hist_output);					//Histogram Equalization
+		blur(hist_output, imgBlur, Size(10, 10));					//Mean blur with window size of 10x10
+		medianBlur(imgBlur, medBlur, 3);							//median blur
+		GaussianBlur(medBlur, gaussBlur, Size(5, 5), 1.5);			//gaussian blur
+		sharp = 5 * (imgGrayscale - gaussBlur) + imgGrayscale;		//alpha*detail of the image + original image
 
 		//Convert the grayscale image to 16-tone grayscal using lookup table
 		//------------------------------------------------------------------------------

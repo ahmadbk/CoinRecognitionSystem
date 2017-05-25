@@ -26,34 +26,23 @@ myKNN::myKNN(int VS, float tD[15][100], int l[15], float pD[10][100], int pl[15]
 
 bool myKNN::train_mlp_classifier(const string& filename_to_save)
 {
-	//Mat matTrainFeatures(0, TRAINING_SIZE, CV_32F);
-	//Mat matSample(0, TEST_SIZE, CV_32F);
-
-	//Mat matTrainLabels(0, TRAINING_SIZE, CV_32F);
-	//Mat matSampleLabels(0, TEST_SIZE, CV_32F);
-
-	//Mat matResults(0, 0, CV_32F);
-
 	const int class_count = 6;
-	Mat train_data = Mat(TRAINING_SIZE, VEC_SIZE, CV_32FC1, &trainingData);
-	Mat responses = Mat(TRAINING_SIZE, 1, CV_32S, &labels);
-
-	Mat test_data = Mat(TEST_SIZE, VEC_SIZE, CV_32FC1, &pData);
-	Mat test_responses = Mat(TEST_SIZE, 1, CV_32S, &pLabels);
+	Mat train_data = Mat(TRAINING_SIZE, VEC_SIZE, CV_32FC1, &trainingData);//Set up training data into Mat
+	Mat responses = Mat(TRAINING_SIZE, 1, CV_32S, &labels);//Set up corresponding labels into Mat
 
 	Ptr<TrainData> trainingData;
-	Ptr<KNearest> kclassifier = KNearest::create();
+	Ptr<KNearest> kclassifier = KNearest::create();//Initialing KNearest neighbor classifier
 
 	trainingData = TrainData::create(train_data,
-		SampleTypes::ROW_SAMPLE, responses);
+		SampleTypes::ROW_SAMPLE, responses);//creating TrainData type using train data and corrsponding labels
 
 	kclassifier->setIsClassifier(true);
 	kclassifier->setAlgorithmType(KNearest::Types::BRUTE_FORCE);
 	kclassifier->setDefaultK(1);
 
-	kclassifier->train(trainingData);
+	kclassifier->train(trainingData);//Training the classifier
 
-	kclassifier->findNearest(test_data, kclassifier->getDefaultK(), test_responses);
+	//kclassifier->findNearest(test_data, kclassifier->getDefaultK(), test_responses);
 
 
 	cout << "Begin Prediction..." << endl;
@@ -66,18 +55,19 @@ bool myKNN::train_mlp_classifier(const string& filename_to_save)
 
 void myKNN::predict_display_results(const Ptr<KNearest>& model, const string& filename_to_save)
 {
-	Mat test_data = Mat(TEST_SIZE, VEC_SIZE, CV_32FC1, &pData);
-	Mat random[10][1];
-	Mat p_responses = Mat(TEST_SIZE, 1, CV_32S, &random);
-	model->findNearest(test_data, model->getDefaultK(), p_responses);
+	Mat test_data = Mat(TEST_SIZE, VEC_SIZE, CV_32FC1, &pData);//Set up test data into a Mat
+	Mat random[10][1];//Will store the result for one sample against all classes 
+	Mat p_responses = Mat(TEST_SIZE, 1, CV_32S, &random);//redundant 
+	model->findNearest(test_data, model->getDefaultK(), p_responses); //Using test data and labels to find nearest neighbours for each test sample
+																	  //Distances stored in p_responses Mat
 
-	float *data = (float *)(p_responses.data);
+	float *data = (float *)(p_responses.data);//Conversion from Mat to float so the values can be accessed and used to compare more easily
 	
 	for (int i = 0; i < TEST_SIZE; i++)
 	{
-		if (pLabels[i] == 1)
+		if (pLabels[i] == 1)//original label of the test sample
 		{
-			if (data[i] == 1)
+			if (data[i] == 1)//predicted label from the classifier
 				std::cout << "Correct R1" << "\n";
 			else
 				std::cout << "Incorrect: Expected-R" << getVal(pLabels[i]) << "\tPredicted-R" << getVal(data[i]) << "\n";
@@ -125,7 +115,7 @@ void myKNN::predict_display_results(const Ptr<KNearest>& model, const string& fi
 	//}
 }
 
-float myKNN::getVal(int c)
+float myKNN::getVal(int c)//converting label to the value in rands 
 {
 	switch (c)
 	{
